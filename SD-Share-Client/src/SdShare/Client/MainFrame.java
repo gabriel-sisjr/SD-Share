@@ -19,7 +19,6 @@ import javax.swing.JOptionPane;
 public class MainFrame extends javax.swing.JFrame {
 
     private String logTextArea;
-    private boolean logarResultado = false;
     private Main m;
 
     /**
@@ -44,10 +43,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         m = new Main();
         m.Init();
-
-        if (logarResultado) {
-            outputTextArea.setText(logTextArea);
-        }
 
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new java.awt.event.WindowAdapter() {

@@ -39,10 +39,10 @@ class Main {
         if (resposta.contains("achou=true")) {
             var nomeArquivo = resposta.split(";")[1];
             ReceberArquivo(nomeArquivo);
-            return "[SERVER]: O Arquivo -> " +  nomeArquivo + " <- Foi Baixado com sucesso!";
+            return "[SERVER]: O arquivo -> " +  nomeArquivo + " <- foi baixado com sucesso!";
+        } else {
+         return "[SERVER]: O arquivo solicitado não foi encontrado!";   
         }
-
-        return "[SERVER]: " + resposta;
     }
 
     private void ReceberArquivo(String fileName) throws Exception {
