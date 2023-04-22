@@ -36,8 +36,13 @@ class Main {
     public String LerMensagem() throws IOException, Exception {
         // recebe dados do servidor
         var resposta = fromServer.readLine();
-        ReceberArquivo(resposta);
-        return "[SERVER]: " + fromServer.readLine();
+        if (resposta.contains("achou=true")) {
+            var nomeArquivo = resposta.split(";")[1];
+            ReceberArquivo(nomeArquivo);
+            return "[SERVER]: O Arquivo -> " +  nomeArquivo + " <- Foi Baixado com sucesso!";
+        }
+
+        return "[SERVER]: " + resposta;
     }
 
     private void ReceberArquivo(String fileName) throws Exception {

@@ -82,10 +82,10 @@ class Server extends Thread {
         System.out.println("[CLIENTE]: " + mensagem);
 
         if (ArquivoExiste(mensagem)) {
-            toClient.println(mensagem);
+            toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
         } else {
-            toClient.println("ARQUIVO NÃO EXISTE!!");
+            toClient.println("achou=false;");
         }
     }
 

@@ -298,7 +298,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSearchActionPerformed
 
-    
+
     private void searchOnlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchOnlineActionPerformed
     }//GEN-LAST:event_searchOnlineActionPerformed
 
