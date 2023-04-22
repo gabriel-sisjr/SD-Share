@@ -1,16 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package SdShare.Client;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,8 +16,20 @@ import javax.swing.JOptionPane;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    private final String PATH = "SD-SHARE/";
     private String logTextArea;
     private Main m;
+
+    private void listarArquivosLocais(final File nomePasta, DefaultTableModel model) {
+        for (final File arquivo : nomePasta.listFiles()) {
+            if (arquivo.isDirectory()) {
+                listarArquivosLocais(arquivo, model);
+            } else {
+                model.addRow(new Object[]{arquivo.getName(), "Local", "-"});
+                System.out.println(arquivo.getName());
+            }
+        }
+    }
 
     /**
      * Creates new form MainFrame
@@ -40,6 +50,9 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         });
+
+        var model = (DefaultTableModel) table.getModel();
+        listarArquivosLocais(new File(PATH), model);
 
         m = new Main();
         m.Init();
