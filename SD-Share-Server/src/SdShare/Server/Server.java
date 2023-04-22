@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 // Só pra nao criar mais de 1 arquivo.
 class Main {
-
     public static void main(String[] args) throws IOException {
         var s = new Server();
         s.run();
@@ -17,16 +16,7 @@ class Main {
 class Server extends Thread {
 
     private final String PATH = "SD-SHARE/";
-
     private final ServerSocket ss;
-    private Socket s;
-    private PrintStream toClient;
-    private BufferedReader fromClient;
-
-    // Arquivos
-    private FileInputStream fileInputStream;
-    private DataInputStream dataInputStream;
-    private DataOutputStream dataOutputStream;
 
     public Server() throws IOException {
         // Criar o server socket
@@ -41,9 +31,49 @@ class Server extends Thread {
     public void run() {
         super.run();
 
+        for (;;) {
+            SocketHandler socketHander;
+            try {
+                socketHander = new SocketHandler(ss.accept());
+                socketHander.start();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private boolean CriarDiretorio() {
+        var f = new File(PATH);
+
+        if (!f.exists()) {
+            f.mkdir();
+        }
+
+        return f.exists();
+    }
+}
+
+class SocketHandler extends Thread {
+
+    private final String PATH = "SD-SHARE/";
+
+    private final Socket s;
+    private PrintStream toClient;
+    private BufferedReader fromClient;
+
+    // Arquivos
+    private FileInputStream fileInputStream;
+    private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
+
+    public SocketHandler(Socket socket) {
+        this.s = socket;
+    }
+
+    @Override
+    public void run() {
         try {
             // aceita conexão
-            s = ss.accept();
 
             System.out.println("Conexão estabelecida. Cliente -> " + s.toString());
 
@@ -87,16 +117,6 @@ class Server extends Thread {
         } else {
             toClient.println("achou=false;");
         }
-    }
-
-    private boolean CriarDiretorio() {
-        var f = new File(PATH);
-
-        if (!f.exists()) {
-            f.mkdir();
-        }
-
-        return f.exists();
     }
 
     private boolean ArquivoExiste(String nomeArquivo) {
@@ -144,7 +164,6 @@ class Server extends Thread {
     public void FecharServidor() throws IOException {
         toClient.close();
         fromClient.close();
-        ss.close();
         s.close();
     }
 }
