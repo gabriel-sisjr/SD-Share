@@ -40,7 +40,9 @@ class Main {
             var nomeArquivo = resposta.split(";")[1];
             ReceberArquivo(nomeArquivo);
             return "[SERVER]: O arquivo -> " +  nomeArquivo + " <- foi baixado com sucesso!";
-        } else {
+        } if(reposta){
+        }
+        else {
          return "[SERVER]: O arquivo solicitado não foi encontrado!";   
         }
     }

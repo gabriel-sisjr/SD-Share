@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,9 +30,13 @@ class SocketHandler extends Thread {
     private FileInputStream fileInputStream;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    
+    //Outros clientes
+    private final ArrayList<SocketHandler> conexoesAbertas;
 
-    public SocketHandler(Socket socket) {
+    public SocketHandler(Socket socket, ArrayList<SocketHandler> conexoesAbertas) {
         this.s = socket;
+        this.conexoesAbertas = conexoesAbertas;
     }
 
     @Override
@@ -78,7 +83,10 @@ class SocketHandler extends Thread {
         if (ArquivoExiste(mensagem)) {
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
-        } else {
+        } else if(ArquivoExisteNosClientes(mensagem)){
+            // Adicionar código para pegar arquivos dos clientes
+        } 
+        else {
             toClient.println("achou=false;");
         }
     }
@@ -86,6 +94,11 @@ class SocketHandler extends Thread {
     private boolean ArquivoExiste(String nomeArquivo) {
         System.out.println(PATH + nomeArquivo);
         return new File(PATH + nomeArquivo).exists();
+    }
+    
+    
+    private boolean ArquivoExisteNosClientes(String nomeDoArquivo){
+        return false;
     }
 
     // 
@@ -130,4 +143,6 @@ class SocketHandler extends Thread {
         fromClient.close();
         s.close();
     }
+    
+    public void setConexoesAbertas()
 }

@@ -42,7 +42,7 @@ class Server extends Thread {
 
                 // Caso precise buscar em outros clientes, só pegar as infos daqui.
                 conexoesAbertas.add(socketHander);
-
+                
                 // Iniciando
                 socketHander.start();
             } catch (IOException ex) {
