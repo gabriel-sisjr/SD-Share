@@ -83,8 +83,10 @@ class SocketHandler extends Thread {
         if (ArquivoExiste(mensagem)) {
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
-        } else if(ArquivoExisteNosClientes(mensagem)){
+        } else if(!ArquivoExisteNosClientes(mensagem)){
             // Adicionar código para pegar arquivos dos clientes
+            ReceberArquivo(mensagem);
+            toClient.println("[SERVER]: Arquivo recebido!");
         } 
         else {
             toClient.println("achou=false;");
@@ -98,6 +100,9 @@ class SocketHandler extends Thread {
     
     
     private boolean ArquivoExisteNosClientes(String nomeDoArquivo){
+        for(SocketHandler socketHandler : conexoesAbertas){
+            socketHandler.toClient.println("Arquivo: " + nomeDoArquivo);
+        }
         return false;
     }
 
@@ -124,7 +129,7 @@ class SocketHandler extends Thread {
     private void ReceberArquivo(String fileName) throws Exception {
         int bytes = 0;
         // read file size
-        try (var fileOutputStream = new FileOutputStream(fileName)) {
+        try (var fileOutputStream = new FileOutputStream(PATH + fileName)) {
             // read file size
             var tamanho = dataInputStream.readLong();
             byte[] buffer = new byte[4 * 1024];
@@ -143,6 +148,4 @@ class SocketHandler extends Thread {
         fromClient.close();
         s.close();
     }
-    
-    public void setConexoesAbertas()
 }

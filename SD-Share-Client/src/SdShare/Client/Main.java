@@ -40,11 +40,25 @@ class Main {
             var nomeArquivo = resposta.split(";")[1];
             ReceberArquivo(nomeArquivo);
             return "[SERVER]: O arquivo -> " +  nomeArquivo + " <- foi baixado com sucesso!";
-        } if(reposta){
+        } if(resposta.contains("Arquivo: ")){
+            String[] nomeDoArquivo = resposta.split(" ");
+            
+            // CLIENTE verifica se possui o arquivo solicitado pelo SERVIDOR
+            if(ArquivoExiste(nomeDoArquivo[1])){
+                EnviarArquivo(PATH + nomeDoArquivo[1]);
+                return "[CLIENT]: enviando arquivo solicitado pelo [SERVER]!";
+            } else{
+                return "[CLIENT]: O arquivo solicitado não foi encontrado!";
+            }
         }
         else {
          return "[SERVER]: O arquivo solicitado não foi encontrado!";   
         }
+    }
+    
+    private boolean ArquivoExiste(String nomeArquivo) {
+        System.out.println(PATH + nomeArquivo);
+        return new File(PATH + nomeArquivo).exists();
     }
 
     private void ReceberArquivo(String fileName) throws Exception {
@@ -61,6 +75,26 @@ class Main {
         }
         // Recebendo o arquivo
         System.out.println("Arquivo Recebido");
+    }
+    
+    // 
+    private void EnviarArquivo(String path) throws Exception {
+        // abrindo arquivo.
+        var file = new File(path);
+        var fileInputStream = new FileInputStream(file);
+
+        //
+        dataOutputStream.writeLong(file.length());
+        // Quebrando em partes.
+        byte[] buffer = new byte[4 * 1024];
+        int bytes;
+        while ((bytes = fileInputStream.read(buffer)) != -1) {
+            // Enviando o arquivo.
+            dataOutputStream.write(buffer, 0, bytes);
+            dataOutputStream.flush();
+        }
+        // close the file here
+        fileInputStream.close();
     }
 
     public void FecharConexao() throws IOException {
