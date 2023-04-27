@@ -86,7 +86,6 @@ class SocketHandler extends Thread {
         } else if(!ArquivoExisteNosClientes(mensagem)){
             // Adicionar código para pegar arquivos dos clientes
             ReceberArquivo(mensagem);
-            toClient.println("[SERVER]: Arquivo recebido!");
         } 
         else {
             toClient.println("achou=false;");

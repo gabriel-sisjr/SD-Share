@@ -17,7 +17,7 @@ class Main {
     public void Init() throws IOException {
         // criando o client socket
         s = new Socket("localhost", 888);
-
+        
         // enviar dados ao servidor
         toServer = new DataOutputStream(s.getOutputStream());
 
@@ -26,6 +26,12 @@ class Main {
 
         dataInputStream = new DataInputStream(s.getInputStream());
         dataOutputStream = new DataOutputStream(s.getOutputStream());
+        
+        // Criando um ATENDENTE para responder aos pedidos do SERVIDOR
+        Attendant attendant = new Attendant("localhost", 888);
+        // Enviando mensagem para informar que ele é o ATTENDANT
+        attendant.EnviarMensagem("[ATTENDANT]");
+        attendant.start();
     }
 
     public void EnviarMensagem(String mensagem) throws IOException {
@@ -40,18 +46,7 @@ class Main {
             var nomeArquivo = resposta.split(";")[1];
             ReceberArquivo(nomeArquivo);
             return "[SERVER]: O arquivo -> " +  nomeArquivo + " <- foi baixado com sucesso!";
-        } if(resposta.contains("Arquivo: ")){
-            String[] nomeDoArquivo = resposta.split(" ");
-            
-            // CLIENTE verifica se possui o arquivo solicitado pelo SERVIDOR
-            if(ArquivoExiste(nomeDoArquivo[1])){
-                EnviarArquivo(PATH + nomeDoArquivo[1]);
-                return "[CLIENT]: enviando arquivo solicitado pelo [SERVER]!";
-            } else{
-                return "[CLIENT]: O arquivo solicitado não foi encontrado!";
-            }
-        }
-        else {
+        } else {
          return "[SERVER]: O arquivo solicitado não foi encontrado!";   
         }
     }
