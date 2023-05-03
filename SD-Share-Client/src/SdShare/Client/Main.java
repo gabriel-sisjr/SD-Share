@@ -13,6 +13,9 @@ class Main {
     private final String PATH = "SD-SHARE/";
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    
+    //Atendente
+    private Attendant attendant;
 
     public void Init() throws IOException {
         // criando o client socket
@@ -28,10 +31,10 @@ class Main {
         dataOutputStream = new DataOutputStream(s.getOutputStream());
         
         // Criando um ATENDENTE para responder aos pedidos do SERVIDOR
-        Attendant attendant = new Attendant("localhost", 888);
+        attendant = new Attendant("localhost", 888);
+        attendant.start();
         // Enviando mensagem para informar que ele é o ATTENDANT
         attendant.EnviarMensagem("[ATTENDANT]");
-        attendant.start();
     }
 
     public void EnviarMensagem(String mensagem) throws IOException {

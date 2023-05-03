@@ -55,6 +55,7 @@ public class Attendant extends Thread{
             EnviarArquivo(PATH + message);
         } else{
             output.writeBytes("[ATTENDANT]: arquivo não encontrado!");
+            System.out.println("[ATTENDANT]: arquivo não encontrado!");
         }
     } 
     

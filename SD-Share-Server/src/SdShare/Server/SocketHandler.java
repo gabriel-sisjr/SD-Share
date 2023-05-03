@@ -33,10 +33,14 @@ class SocketHandler extends Thread {
     
     //Outros clientes
     private final ArrayList<SocketHandler> conexoesAbertas;
+    
+    //Quem está conectado comingo
+    private int quemE; // 0: cliente, 1: atendente
 
     public SocketHandler(Socket socket, ArrayList<SocketHandler> conexoesAbertas) {
         this.s = socket;
         this.conexoesAbertas = conexoesAbertas;
+        quemE = 0;
     }
 
     @Override
@@ -79,8 +83,12 @@ class SocketHandler extends Thread {
 
     private void ProcessaMensagem(String mensagem) throws Exception {
         System.out.println("[CLIENTE]: " + mensagem);
-
-        if (ArquivoExiste(mensagem)) {
+        
+        if(mensagem.compareTo("[ATTENDANT]") == 1){
+            quemE = 1; 
+            System.out.println("Sou Atedente!!");
+        }
+        else if (ArquivoExiste(mensagem)) {
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
         } else if(!ArquivoExisteNosClientes(mensagem)){
@@ -100,7 +108,9 @@ class SocketHandler extends Thread {
     
     private boolean ArquivoExisteNosClientes(String nomeDoArquivo){
         for(SocketHandler socketHandler : conexoesAbertas){
-            socketHandler.toClient.println("Arquivo: " + nomeDoArquivo);
+            
+            if(socketHandler.getQuemE() == 1)
+                socketHandler.toClient.println(nomeDoArquivo);
         }
         return false;
     }
@@ -146,5 +156,9 @@ class SocketHandler extends Thread {
         toClient.close();
         fromClient.close();
         s.close();
+    }
+    
+    public int getQuemE(){
+        return quemE;
     }
 }
