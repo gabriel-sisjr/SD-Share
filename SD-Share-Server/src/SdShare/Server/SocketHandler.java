@@ -91,7 +91,10 @@ class SocketHandler extends Thread {
     private void ProcessaMensagemDoCliente(String mensagem) throws Exception {
         System.out.println("[CLIENTE]: " + mensagem);
         
-        if (ArquivoExiste(mensagem)) {
+        if(mensagem.contains("Atendente")){
+            quemE = 1; 
+            System.out.println("Sou Atedente!!");
+        } else if (ArquivoExiste(mensagem)) {
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
         } else if(ArquivoExisteNosClientes(mensagem)){
@@ -106,19 +109,16 @@ class SocketHandler extends Thread {
     }
     
     private void processaMensagemDoAtendente(String mensagem){
-        if(mensagem.contains("Atendente")){
-            quemE = 1; 
-            System.out.println("Sou Atedente!!");
-        }
+        System.err.println(mensagem);
     }
 
     private boolean ArquivoExiste(String nomeArquivo) {
-        //System.out.println(PATH + nomeArquivo);
-        //return new File(PATH + nomeArquivo).exists();
-        Path path = Paths.get(PATH + nomeArquivo);
-        //System.out.println("SdShare.Server.SocketHandler.ArquivoExiste(): " + path.toString());
-        System.out.println("fgjgjgjk");
-        return Files.exists(path);
+        System.out.println(PATH + nomeArquivo);
+        return new File(PATH + nomeArquivo).exists();
+        
+        //Path path = Paths.get(PATH + nomeArquivo);
+        //System.out.println("fgjgjgjk");
+        // return Files.exists(path);
     }
     
     // OBS: Melhorar a lógica
@@ -130,14 +130,15 @@ class SocketHandler extends Thread {
             if(socketHandler.getQuemE() == 1){
                 socketHandler.toClient.println(nomeDoArquivo);
                 
-                mensagem = socketHandler.fromClient.readLine();
+                //mensagem = socketHandler.fromClient.readLine();
                 
-                if(mensagem.contains("true")){
+                /*if(mensagem.contains("true")){
                     socketHandler.ReceberArquivo(PATH + mensagem);
+                }*/
+                //mensagem = null;
+                if(ArquivoExiste(nomeDoArquivo)){
                     return true;
                 }
-                
-                mensagem = null;
             }
         }
         return false;

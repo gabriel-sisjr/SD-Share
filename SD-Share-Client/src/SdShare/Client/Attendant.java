@@ -52,10 +52,10 @@ public class Attendant extends Thread{
         String message = input.readLine();
         
         if(ArquivoExiste(message)){
-            EnviarMensagem("[ATTENDANT]: true"); // Tem o arquivo
+            //EnviarMensagem("[ATTENDANT]: true"); // Tem o arquivo
             EnviarArquivo(PATH + message);
         } else{
-            EnviarMensagem("[ATTENDANT]: false"); // Não tem o arquivo
+            //EnviarMensagem("[ATTENDANT]: false"); // Não tem o arquivo
             System.out.println("[ATTENDANT]: arquivo não encontrado!");
         }
     } 
