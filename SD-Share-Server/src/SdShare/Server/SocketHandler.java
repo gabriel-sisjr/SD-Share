@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,7 +71,11 @@ class SocketHandler extends Thread {
                 // não envia uma string nula
                 // lê do cliente
                 while ((str = fromClient.readLine()) != null) {
-                    ProcessaMensagem(str);
+                    if(quemE == 0) {
+                        ProcessaMensagemDoCliente(str); 
+                    } else {
+                        processaMensagemDoAtendente(str);
+                    }
                 }
 
                 FecharServidor();
@@ -81,36 +88,57 @@ class SocketHandler extends Thread {
         }
     }
 
-    private void ProcessaMensagem(String mensagem) throws Exception {
+    private void ProcessaMensagemDoCliente(String mensagem) throws Exception {
         System.out.println("[CLIENTE]: " + mensagem);
         
-        if(mensagem.compareTo("[ATTENDANT]") == 1){
-            quemE = 1; 
-            System.out.println("Sou Atedente!!");
-        }
-        else if (ArquivoExiste(mensagem)) {
+        if (ArquivoExiste(mensagem)) {
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
-        } else if(!ArquivoExisteNosClientes(mensagem)){
+        } else if(ArquivoExisteNosClientes(mensagem)){
             // Adicionar código para pegar arquivos dos clientes
-            ReceberArquivo(mensagem);
+            //ReceberArquivo(mensagem);
+            toClient.println("achou=true;" + mensagem);
+            EnviarArquivo(PATH + mensagem);
         } 
         else {
             toClient.println("achou=false;");
         }
     }
+    
+    private void processaMensagemDoAtendente(String mensagem){
+        if(mensagem.contains("Atendente")){
+            quemE = 1; 
+            System.out.println("Sou Atedente!!");
+        }
+    }
 
     private boolean ArquivoExiste(String nomeArquivo) {
-        System.out.println(PATH + nomeArquivo);
-        return new File(PATH + nomeArquivo).exists();
+        //System.out.println(PATH + nomeArquivo);
+        //return new File(PATH + nomeArquivo).exists();
+        Path path = Paths.get(PATH + nomeArquivo);
+        //System.out.println("SdShare.Server.SocketHandler.ArquivoExiste(): " + path.toString());
+        System.out.println("fgjgjgjk");
+        return Files.exists(path);
     }
     
-    
-    private boolean ArquivoExisteNosClientes(String nomeDoArquivo){
+    // OBS: Melhorar a lógica
+    private boolean ArquivoExisteNosClientes(String nomeDoArquivo) throws IOException, Exception{
+        String mensagem = null;
+        
         for(SocketHandler socketHandler : conexoesAbertas){
             
-            if(socketHandler.getQuemE() == 1)
+            if(socketHandler.getQuemE() == 1){
                 socketHandler.toClient.println(nomeDoArquivo);
+                
+                mensagem = socketHandler.fromClient.readLine();
+                
+                if(mensagem.contains("true")){
+                    socketHandler.ReceberArquivo(PATH + mensagem);
+                    return true;
+                }
+                
+                mensagem = null;
+            }
         }
         return false;
     }

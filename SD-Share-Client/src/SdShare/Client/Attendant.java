@@ -45,16 +45,17 @@ public class Attendant extends Thread{
     }
     
     public void EnviarMensagem(String message) throws IOException{
-        output.writeBytes(message);
+        output.writeBytes(message + "\n");
     }
     
     private void LerMenssagens() throws IOException, Exception{
         String message = input.readLine();
         
         if(ArquivoExiste(message)){
+            EnviarMensagem("[ATTENDANT]: true"); // Tem o arquivo
             EnviarArquivo(PATH + message);
         } else{
-            output.writeBytes("[ATTENDANT]: arquivo não encontrado!");
+            EnviarMensagem("[ATTENDANT]: false"); // Não tem o arquivo
             System.out.println("[ATTENDANT]: arquivo não encontrado!");
         }
     } 
