@@ -35,15 +35,21 @@ class SocketHandler extends Thread {
     private DataOutputStream dataOutputStream;
     
     //Outros clientes
-    private final ArrayList<SocketHandler> conexoesAbertas;
+    private ArrayList<SocketHandler> conexoesAbertas;
+    
+    private int id;
     
     //Quem está conectado comingo
     private int quemE; // 0: cliente, 1: atendente
 
-    public SocketHandler(Socket socket, ArrayList<SocketHandler> conexoesAbertas) {
+    public SocketHandler(Socket socket, int id) {
         this.s = socket;
-        this.conexoesAbertas = conexoesAbertas;
+        this.id = id;
+        //this.conexoesAbertas = conexoesAbertas;
+        //conexoesAbertas.remove(this)
         quemE = 0;
+        
+        conexoesAbertas = new ArrayList<SocketHandler>();
     }
 
     @Override
@@ -107,44 +113,46 @@ class SocketHandler extends Thread {
             toClient.println("achou=false;");
         }
     }
-    
-    private void processaMensagemDoAtendente(String mensagem){
-        System.err.println(mensagem);
+ 
+    private void processaMensagemDoAtendente(String mensagem) throws Exception{
+        if (mensagem.contains("[ATTENDANT]: true")) {
+            var nomeArquivo = mensagem.split(";")[1];
+            //toClient.println("achou=true;" + mensagem);
+            ReceberArquivo(nomeArquivo);
+        } else{
+            toClient.println("achou=false;");
+        }
     }
 
     private boolean ArquivoExiste(String nomeArquivo) {
         System.out.println(PATH + nomeArquivo);
         return new File(PATH + nomeArquivo).exists();
         
-        //Path path = Paths.get(PATH + nomeArquivo);
-        //System.out.println("fgjgjgjk");
-        // return Files.exists(path);
+        /*Path path = Paths.get(PATH + nomeArquivo);
+        System.out.println(PATH + nomeArquivo);
+        return Files.exists(path);*/
     }
     
     // OBS: Melhorar a lógica
     private boolean ArquivoExisteNosClientes(String nomeDoArquivo) throws IOException, Exception{
-        String mensagem = null;
+        //String mensagem = null;
         
+        boolean arquivoExiste = false;
         for(SocketHandler socketHandler : conexoesAbertas){
             
-            if(socketHandler.getQuemE() == 1){
+            if(socketHandler.getQuemE() == 1){ // Verificando se é o atendente
                 socketHandler.toClient.println(nomeDoArquivo);
-                
-                //mensagem = socketHandler.fromClient.readLine();
-                
-                /*if(mensagem.contains("true")){
-                    socketHandler.ReceberArquivo(PATH + mensagem);
-                }*/
-                //mensagem = null;
+                //System.out.println("mensagem do atendente: " + mensagem);
                 if(ArquivoExiste(nomeDoArquivo)){
-                    return true;
+                    arquivoExiste = true;
+                    break;
                 }
             }
         }
-        return false;
+        
+        return arquivoExiste;
     }
-
-    // 
+    
     private void EnviarArquivo(String path) throws Exception {
         // abrindo arquivo.
         var file = new File(path);
@@ -190,4 +198,21 @@ class SocketHandler extends Thread {
     public int getQuemE(){
         return quemE;
     }
+
+    public void setConexoesAbertas(ArrayList<SocketHandler> conexoesAbertas) {
+        System.out.println("Quantidade de conexões abertas (id = " + id + "): " + conexoesAbertas.size());
+        
+        
+        for(SocketHandler socketHandler : conexoesAbertas){
+            if(this.conexoesAbertas.contains(socketHandler) && socketHandler.getIdDoCliente() != id){
+                this.conexoesAbertas.add(socketHandler);
+            }
+        }        
+    }
+
+    public int getIdDoCliente() {
+        return id;
+    }
+    
+    
 }
