@@ -27,8 +27,9 @@ public class Attendant extends Thread{
     private DataOutputStream output;
     private final String PATH = "SD-SHARE/";
     
-    public Attendant(String address, int port) throws IOException{
-        socket = new Socket(address, port);
+    public Attendant(Socket socket) throws IOException{
+        //socket = new Socket(address, port);
+        this.socket = socket;
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new DataOutputStream(socket.getOutputStream());
     }
@@ -55,7 +56,7 @@ public class Attendant extends Thread{
             EnviarMensagem("[ATTENDANT]: true;"+ message); // Tem o arquivo
             EnviarArquivo(PATH + message);
         } else{
-            //EnviarMensagem("[ATTENDANT]: false"); // Não tem o arquivo
+            EnviarMensagem("[ATTENDANT]: false"); // Não tem o arquivo
             System.out.println("[ATTENDANT]: arquivo não encontrado!");
         }
     } 

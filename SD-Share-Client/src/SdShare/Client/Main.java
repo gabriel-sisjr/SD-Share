@@ -31,10 +31,11 @@ class Main {
         dataOutputStream = new DataOutputStream(s.getOutputStream());
         
         // Criando um ATENDENTE para responder aos pedidos do SERVIDOR
-        attendant = new Attendant("localhost", 888);
+        //attendant = new Attendant("localhost", 888);
+        attendant = new Attendant(s);
         attendant.start();
         // Enviando mensagem para informar que ele é o ATTENDANT
-        attendant.EnviarMensagem("Atendente");
+        //attendant.EnviarMensagem("Atendente");
     }
 
     public void EnviarMensagem(String mensagem) throws IOException {

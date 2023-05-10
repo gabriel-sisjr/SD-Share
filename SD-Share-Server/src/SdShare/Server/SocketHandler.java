@@ -47,7 +47,7 @@ class SocketHandler extends Thread {
         this.id = id;
         //this.conexoesAbertas = conexoesAbertas;
         //conexoesAbertas.remove(this)
-        quemE = 0;
+        //quemE = 0;
         
         conexoesAbertas = new ArrayList<SocketHandler>();
     }
@@ -77,10 +77,10 @@ class SocketHandler extends Thread {
                 // não envia uma string nula
                 // lê do cliente
                 while ((str = fromClient.readLine()) != null) {
-                    if(quemE == 0) {
-                        ProcessaMensagemDoCliente(str); 
+                    if(str.contains("[ATTENDANT]")) {
+                        processaMensagemDoAtendente(str); 
                     } else {
-                        processaMensagemDoAtendente(str);
+                        ProcessaMensagemDoCliente(str);
                     }
                 }
 
@@ -95,32 +95,30 @@ class SocketHandler extends Thread {
     }
 
     private void ProcessaMensagemDoCliente(String mensagem) throws Exception {
-        System.out.println("[CLIENTE]: " + mensagem);
+        System.out.println("[CLIENTE](" + id +  "): " + mensagem);
         
-        if(mensagem.contains("Atendente")){
-            quemE = 1; 
-            System.out.println("Sou Atedente!!");
-        } else if (ArquivoExiste(mensagem)) {
-            toClient.println("achou=true;" + mensagem);
-            EnviarArquivo(PATH + mensagem);
-        } else if(ArquivoExisteNosClientes(mensagem)){
+        if(ArquivoExiste(mensagem) || ArquivoExisteNosClientes(mensagem)){
             // Adicionar código para pegar arquivos dos clientes
             //ReceberArquivo(mensagem);
             toClient.println("achou=true;" + mensagem);
             EnviarArquivo(PATH + mensagem);
-        } 
-        else {
+        } /*else  if (ArquivoExisteNosClientes(mensagem)) {
+            toClient.println("achou=true;" + mensagem);
+            EnviarArquivo(PATH + mensagem);
+        } */else {
             toClient.println("achou=false;");
         }
     }
  
     private void processaMensagemDoAtendente(String mensagem) throws Exception{
+        System.out.println("[ATTENDANT](" + id + "): " + mensagem);
+        
         if (mensagem.contains("[ATTENDANT]: true")) {
             var nomeArquivo = mensagem.split(";")[1];
             //toClient.println("achou=true;" + mensagem);
             ReceberArquivo(nomeArquivo);
         } else{
-            toClient.println("achou=false;");
+            System.out.println("Arquivo não encontrado no cliente " + id + "!!");
         }
     }
 
@@ -140,14 +138,15 @@ class SocketHandler extends Thread {
         boolean arquivoExiste = false;
         for(SocketHandler socketHandler : conexoesAbertas){
             
-            if(socketHandler.getQuemE() == 1){ // Verificando se é o atendente
+            //if(socketHandler.getQuemE() == 1){ // Verificando se é o atendente
                 socketHandler.toClient.println(nomeDoArquivo);
                 //System.out.println("mensagem do atendente: " + mensagem);
+                //socketHandler.s.wait(10000);
                 if(ArquivoExiste(nomeDoArquivo)){
                     arquivoExiste = true;
                     break;
                 }
-            }
+            //}
         }
         
         return arquivoExiste;
@@ -204,7 +203,7 @@ class SocketHandler extends Thread {
         
         
         for(SocketHandler socketHandler : conexoesAbertas){
-            if(this.conexoesAbertas.contains(socketHandler) && socketHandler.getIdDoCliente() != id){
+            if(!this.conexoesAbertas.contains(socketHandler) && socketHandler.getIdDoCliente() != id){
                 this.conexoesAbertas.add(socketHandler);
             }
         }        
