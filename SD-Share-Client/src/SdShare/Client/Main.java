@@ -31,11 +31,11 @@ class Main {
         dataOutputStream = new DataOutputStream(s.getOutputStream());
         
         // Criando um ATENDENTE para responder aos pedidos do SERVIDOR
-        //attendant = new Attendant("localhost", 888);
-        attendant = new Attendant(s);
+        attendant = new Attendant(new Socket("localhost", 888));
+        //attendant = new Attendant(s);
         attendant.start();
         // Enviando mensagem para informar que ele é o ATTENDANT
-        //attendant.EnviarMensagem("Atendente");
+        attendant.EnviarMensagem("[ATTENDANT]: Atendente");
     }
 
     public void EnviarMensagem(String mensagem) throws IOException {
@@ -51,7 +51,7 @@ class Main {
             ReceberArquivo(nomeArquivo);
             return "[SERVER]: O arquivo -> " +  nomeArquivo + " <- foi baixado com sucesso!";
         } else {
-         return "[SERVER]: O arquivo solicitado não foi encontrado!";   
+            return "[SERVER]: O arquivo solicitado não foi encontrado!";   
         }
     }
 
@@ -63,10 +63,13 @@ class Main {
         var tamanho = dataInputStream.readLong();
         byte[] buffer = new byte[4 * 1024];
         while (tamanho > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, tamanho))) != -1) {
+            fileOutputStream.flush();
             // Escrevendo o arquivo
             fileOutputStream.write(buffer, 0, bytes);
             tamanho -= bytes; // lendo até o tamanho do arquivo
         }
+        
+        fileOutputStream.close();
         // Recebendo o arquivo
         System.out.println("Arquivo Recebido");
     }

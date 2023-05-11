@@ -28,7 +28,6 @@ public class Attendant extends Thread{
     private final String PATH = "SD-SHARE/";
     
     public Attendant(Socket socket) throws IOException{
-        //socket = new Socket(address, port);
         this.socket = socket;
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new DataOutputStream(socket.getOutputStream());
