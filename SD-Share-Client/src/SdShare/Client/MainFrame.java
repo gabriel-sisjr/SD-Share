@@ -299,9 +299,9 @@ public class MainFrame extends javax.swing.JFrame {
             m.EnviarMensagem(inputText);
             logTextArea = m.LerMensagem();
             outputTextArea.setText(logTextArea);
+
+            table.removeRowSelectionInterval(0, table.getRowCount());
             var model = (DefaultTableModel) table.getModel();
-            for(var i =0; i<model.getRowCount(); i++)
-                model.removeRow(i);
             listarArquivosLocais(new File(PATH), model);
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
