@@ -38,11 +38,15 @@ class Server extends Thread {
 
         for (;;) {
             try {
-                SocketHandler socketHander = new SocketHandler(ss.accept());
-
+                SocketHandler socketHander = new SocketHandler(ss.accept(), conexoesAbertas.size());
+                
                 // Caso precise buscar em outros clientes, só pegar as infos daqui.
                 conexoesAbertas.add(socketHander);
-
+                
+                for(SocketHandler socketHanderCurrent : conexoesAbertas) {
+                    socketHanderCurrent.setConexoesAbertas(conexoesAbertas);
+                }
+                
                 // Iniciando
                 socketHander.start();
             } catch (IOException ex) {
